@@ -2,98 +2,58 @@ package com.example.termproject;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.ShareActionProvider;
+import androidx.core.view.MenuItemCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.ContextMenu;
+import android.os.Parcelable;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 
 public class ListEvents extends AppCompatActivity {
     private Context context = this;
     static ArrayList<CalEvent> event_list = new ArrayList<>();
-    private EventAdapter eAdapter;
+    static EventAdapter eAdapter;
     private RecyclerView recyclerView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_events);
 
-        if(event_list.isEmpty())
-            readFromFile(getApplicationContext());
 
         recyclerView = findViewById(R.id.recyclerView);
         registerForContextMenu(recyclerView);
         openContextMenu(recyclerView);
+
+        if(event_list.isEmpty())
+            readFromFile(getApplicationContext());
+
+
         eAdapter = new EventAdapter(event_list);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(eAdapter);
-
-
         eAdapter.notifyDataSetChanged();
 
 
 
-        /*listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int i, long id) {
-                Intent editorIntent = new Intent(ViewNotes.this, CreateNote.class);
-                editorIntent.putExtra("noteId", i);
-                startActivity(editorIntent);
-            }
-        });*/
-
-       /* listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, final int delete, long id) {
-
-                new AlertDialog.Builder(getApplicationContext())
-                        .setMessage("Delete this event?")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                event_list.remove(delete);
-                                adapter.notifyDataSetChanged();
-                                //dosyadan da silme yapılacak
-                            }
-                        })
-                        .setNegativeButton("No", null)
-                        .show();
-                return true;
-            }
-        });*/
-
     }
 
-    /*@Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        getMenuInflater().inflate(R.menu.rv_menu, menu);
-    }*/
     protected void onResume() {
         super.onResume();
         eAdapter.notifyDataSetChanged();
@@ -106,10 +66,18 @@ public class ListEvents extends AppCompatActivity {
                 Intent i = new Intent(this,AddEventActivity.class);
                 i.putExtra("position",item.getGroupId());
                 startActivity(i);
+                Toast.makeText(getApplicationContext(), "Event updated", Toast.LENGTH_LONG).show();
                 return true;
             case 122:
                 System.out.println("delete "+item.getGroupId());
                 updateFile(item.getGroupId());
+                eAdapter.notifyDataSetChanged();
+                Toast.makeText(getApplicationContext(), "Event deleted", Toast.LENGTH_LONG).show();
+                return true;
+            case 123:
+                Intent intent = new Intent(getApplicationContext(),Share.class);
+                intent.putExtra("eventId", item.getGroupId());
+                startActivity(intent);
                 return true;
             default:
                 return super.onContextItemSelected(item);
@@ -125,7 +93,20 @@ public class ListEvents extends AppCompatActivity {
             while(reader.ready()) {
                 String line = reader.readLine();
                 if(!line.equals("")) {
-                    CalEvent event = new CalEvent(line.split("_")[0], line.split("_")[1], line.split("_")[2], line.split("_")[3], "location");
+                    CalEvent event = new CalEvent(line.split("_")[0], line.split("_")[1], line.split("_")[2],
+                            line.split("_")[3], line.split("_")[4], line.split("_")[5], line.split("_")[6],line.split("_")[7]);
+                    ArrayList<MyReminder> list = new ArrayList<>();
+                    int i = 0;
+                    if(!line.split("_")[8].equals("")){
+                        while (!line.split("_")[8].split(",")[i].equals("!")){
+                            MyReminder rem = new MyReminder("","");
+                            rem.setDate(line.split("_")[8].split(",")[i].split("-")[1]);
+                            rem.setTime(line.split("_")[8].split(",")[i].split("-")[0]);
+                            list.add(rem);
+                            i++;
+                        }
+                    }
+                    event.setReminderList(list);
                     event_list.add(event);
                 }
             }
@@ -149,7 +130,7 @@ public class ListEvents extends AppCompatActivity {
         }
         try {
             for (CalEvent event : ListEvents.event_list) {
-                String data = event.getName()+"_"+event.getInfo()+"_"+event.getStartDate()+"_"+event.getEndDate()+"_location\n";
+                String data = event.getName()+"_"+event.getInfo()+"_"+event.getStartDate()+"_"+event.getEndDate()+"_"+event.getLocation()+"_"+event.getStartTime()+"_"+event.getEndTime()+"_"+event.getRepeatTime()+"_"+event.reminderList(event)+"\n";
                 stream.write(data.getBytes());
             }
         } catch (IOException e) {

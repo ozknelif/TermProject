@@ -1,26 +1,28 @@
 package com.example.termproject;
 import androidx.appcompat.app.AppCompatActivity;
-
+import androidx.appcompat.app.AppCompatDelegate;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.EventLog;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.CalendarView;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.applandeo.materialcalendarview.EventDay;
+import com.applandeo.materialcalendarview.exceptions.OutOfDateRangeException;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.Calendar;
+import java.util.List;
+
+import static com.example.termproject.SettingsActivity.isNightModeOn;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,11 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private Animation mFabOpenAnim, mFabCloseAnim;
     private String selectedDate;
     private boolean isOpen;
-
-
-
-
-
+    private SharedPreferences appSettingPrefs;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +48,22 @@ public class MainActivity extends AppCompatActivity {
         mFabOpenAnim = AnimationUtils.loadAnimation(MainActivity.this, R.anim.fab_open);
         mFabCloseAnim = AnimationUtils.loadAnimation(MainActivity.this, R.anim.fab_close);
 
+        appSettingPrefs = getSharedPreferences("AppSettingPrefs", 0);
+        isNightModeOn = appSettingPrefs.getBoolean("NightMode", false);
+
+        if(isNightModeOn){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
+
         isOpen = false;
+
+        if(isNightModeOn){
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
 
         mMainAddFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,15 +92,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-
-            @Override
-            public void onSelectedDayChange(CalendarView view, int year, int month,
-                                            int dayOfMonth) {
-                selectedDate = (dayOfMonth+" / "+month+" / "+year);
-            }
-        });
-
         mAddEventFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -102,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent listEventIntent = new Intent(getApplicationContext(), ListEvents.class);
-                //listEventIntent.putExtra("date",selectedDate);
                 isOpen = false;
                 startActivity(listEventIntent);
 
@@ -115,5 +118,19 @@ public class MainActivity extends AppCompatActivity {
             super.onResume();
 
         }
-
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.settingsmenu, menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.sttngs) {
+            Intent settings = new Intent(this, SettingsActivity.class);
+            startActivity(settings);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

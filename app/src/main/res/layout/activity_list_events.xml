@@ -5,11 +5,15 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ListEvents"
-    android:layout_margin="16dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/mainBackground"
+    android:textColor="@color/mainText">
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:longClickable="true"/>
+        android:longClickable="true"
+        android:background="@color/mainBackground"
+        android:textColor="@color/mainText"
+        android:layout_margin="10dp"/>
 </LinearLayout>

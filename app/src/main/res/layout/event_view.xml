@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
-    android:weightSum="1"
+    android:id="@+id/item_layout"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:id="@+id/item_layout">
-
-
+    android:textColor="@color/mainText"
+    android:background="@color/mainBackground"
+    android:orientation="horizontal"
+    android:weightSum="1">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="215dp"
+        android:layout_margin="5dp"
+        android:orientation="vertical"
+        android:background="@color/mainBackground"
+        android:backgroundTint="#FAF6F6">
 
         <TextView
             android:id="@+id/rveventName"
@@ -19,9 +23,10 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            android:textColor="#222222"
+            android:textColor="@color/mainText"
             android:textSize="25sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:background="@color/mainBackground"/>
 
         <TextView
             android:id="@+id/rvEventInfo"
@@ -29,35 +34,52 @@
             android:layout_height="51dp"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            android:textColor="#222222"
-            android:textSize="16sp" />
+            android:textColor="@color/mainText"
+            android:textSize="16sp"
+            android:background="@color/mainBackground"/>
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_height="52dp"
+            android:orientation="horizontal"
+            android:background="@color/mainBackground">
 
             <TextView
-                android:id="@+id/rvStart"
-                android:layout_width="195dp"
+                android:id="@+id/rvDate"
+                android:layout_width="207dp"
                 android:layout_height="55dp"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentBottom="true"
-                android:textColor="#222222"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textColor="@color/mainText"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:background="@color/mainBackground"/>
 
             <TextView
-                android:id="@+id/rvEnd"
-                android:layout_width="212dp"
+                android:id="@+id/rvTime"
+                android:layout_width="207dp"
                 android:layout_height="55dp"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentBottom="true"
-                android:textColor="#222222"
-                android:textSize="16sp" />
+                android:textColor="@color/mainText"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:background="@color/mainBackground"/>
+
 
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="57dp"
+            android:orientation="vertical"
+            android:background="@color/mainBackground">
+
+            <TextView
+                android:id="@+id/rvLocation"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:textSize="14sp"
+                android:textColor="@color/mainText">
+
+            </TextView>
+        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>
